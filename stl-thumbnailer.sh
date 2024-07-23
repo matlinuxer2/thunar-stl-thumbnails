@@ -8,11 +8,13 @@ fi
 INPUT_FILE=$1
 OUTPUT_FILE=$2
 SIZE=$3
+MEM_LIMIT_KiB=$(( 300 * 1024 )) # Limit the memory usage to 300 MiB
 
 TEMP="$(mktemp --directory --tmpdir tumbler-stl-XXXXXXX)"
 # Use a sub shell to enclose the commands in case it aborts and skip the last cleanup action
 # Sub shell BEG
 (
+	ulimit -v $MEM_LIMIT_KiB
 	cp "$INPUT_FILE" "$TEMP/source.stl"
 
 	echo "import(\"source.stl\", convexity=10);" >"$TEMP/thumbnail.scad"
