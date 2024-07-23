@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $# -lt 3 ]]; then
 	echo "$0: input_file_name output_file_name size"
