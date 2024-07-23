@@ -10,11 +10,15 @@ OUTPUT_FILE=$2
 SIZE=$3
 
 TEMP="$(mktemp --directory --tmpdir tumbler-stl-XXXXXXX)"
-cp "$INPUT_FILE" "$TEMP/source.stl"
+# Use a sub shell to enclose the commands in case it aborts and skip the last cleanup action
+# Sub shell BEG
+(
+	cp "$INPUT_FILE" "$TEMP/source.stl"
 
-echo "import(\"source.stl\", convexity=10);" > "$TEMP/thumbnail.scad"
-openscad --imgsize "500,500" -o "$TEMP/thumbnail.png" "$TEMP/thumbnail.scad" 2>/dev/null
+	echo "import(\"source.stl\", convexity=10);" >"$TEMP/thumbnail.scad"
+	openscad --imgsize "500,500" -o "$TEMP/thumbnail.png" "$TEMP/thumbnail.scad" 2>/dev/null
 
-convert -thumbnail "$SIZE" "$TEMP/thumbnail.png" "$OUTPUT_FILE" 1>/dev/null 2>&1
-
-rm -rf $TEMP
+	convert -thumbnail "$SIZE" "$TEMP/thumbnail.png" "$OUTPUT_FILE" 1>/dev/null 2>&1
+)
+# Sub shell END
+[ -d $TEMP ] && rm -rf $TEMP
